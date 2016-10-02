@@ -34,54 +34,63 @@ public class Engine {
         this.manpower = manpower;
     }
     
-    /**
-     * Start analysis to get the desired manpower allocation.
-     */
-    public void run(){
-        LOGGER.log(Level.INFO, "Calculating the desired manpower allocation.");
+    public void run() {
+        LOGGER.info("BEGIN Engine Run");
         
-        LOGGER.log(Level.INFO, "Computing initial allocation...");
-        // the initial manpower will be the average: total manpower/number of packages
-        double imanpower = this.manpower / this.pkgs.size();        
-        LOGGER.log(Level.INFO, "Initial Allocation={0}", imanpower);
+        LOGGER.info("Setting initial allocation");
+        // initial allocation will be the average from the total manpower
+        double imp = this.manpower / this.pkgs.size();
+        this.pkgs.stream().peek( (PackageSetup p) -> p.setManpower(imp)).collect(Collectors.toList());
 
-        LOGGER.log(Level.INFO, "Computing correct allocation...");
+        LOGGER.info("Computing first pass allocation");
+        // get minimum between maximum people assignment and maximum people to satisfy demand
+        this.pkgs.stream().peek(Engine::computeMinimumManpower).collect(Collectors.toList());
+        this.pkgs.stream().forEach(p -> LOGGER.log(Level.FINER, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
         
-        // first pass
-        LOGGER.log(Level.INFO, "First pass...");
+        LOGGER.info("Computing iterative proportional distribution");
+        for(int itr=1; itr<this.pkgs.size()-1; itr++){
+            LOGGER.log(Level.FINE, "ITERATION={0}=====", itr);    
+            LOGGER.log(Level.FINE, "--Computing MATCHED/UNMATCHED manpower");
+            // let's get the total manpower that has been allocated, and those still unallocated
+            double matched = this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
+            double unmatched = this.pkgs.stream().filter(p -> p.getManpower() == 0).mapToDouble(p -> p.getMSD()).sum();
+            LOGGER.log(Level.FINER, "\t**MATCHED={0}, UNMATCHED={1}, POOL={2}", new Object[]{matched, unmatched, this.manpower-matched});
+            
+            LOGGER.log(Level.FINE, "--Computing proportional distribution");
+            // get the ratio and the corresponding distribution based on the unmatched demand
+            this.pkgs.stream()
+                    .filter(p -> p.getManpower() == 0)
+                    .peek((PackageSetup p) -> Engine.computeProportionalDistribution(p, unmatched, this.manpower-matched))
+                    .collect(Collectors.toList());
+            this.pkgs.stream().forEach(p -> LOGGER.log(Level.FINER, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
+        }
+        
+        LOGGER.info("Finalizing allocation");
+        // get the ratio and the corresponding distribution based on the unmatched demand
+        double unmatched = this.pkgs.stream().filter(p -> p.getManpower() == 0).mapToDouble(p -> p.getMSD()).sum();
+        double matched = this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
         this.pkgs.stream()
-                .parallel()
-                .peek(p -> p.setManpower(imanpower))    // set the initial manpower to be the average
-                .peek(Engine::computeMinimumManpower)                  // start decision
+                .filter(p -> p.getManpower() == 0)
+                .peek((PackageSetup p) -> p.setManpower((p.getMSD()/unmatched)*(this.manpower-matched)))
                 .collect(Collectors.toList());
+        this.pkgs.stream().forEach(p -> LOGGER.log(Level.FINER, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
         
-        // let's get the sum of those unmatched so we can create the proportional distribution
-        double unmatchedSum = this.pkgs.stream()
-                .filter(p -> p.getManpower() == 0)
-                .mapToDouble(p -> p.getMSD())
-                .sum();
-        LOGGER.log(Level.INFO, "UNMATCHED SUM={0}", unmatchedSum);
-        
-        // get the matched items as well so we can deduct this amount to the overall ratio for distribution
-        double matchedSum = this.pkgs.stream()
-                .filter(p -> p.getManpower() > 0)
-                .mapToDouble(p -> p.getManpower())
-                .sum();
-        LOGGER.log(Level.INFO, "MATCHED SUM={0}", matchedSum);
-        
-        // second pass
-        // determine the allocated manpower based on ratio
-        LOGGER.log(Level.INFO, "Second and final pass...");
-        this.pkgs.stream()
-                .filter(p -> p.getManpower() == 0)
-                .peek(p -> p.setManpower((p.getMSD()/unmatchedSum)*(this.manpower-matchedSum)))
-                .collect(Collectors.toList());       
-     }
-
-    // this is where computation of optimal allocation happens
+        LOGGER.info("END Engine Run");
+    }
+    
+    // STEP #7
+    private static void computeProportionalDistribution(PackageSetup p, double unmatched, double pool){
+        double ratio = p.getMSD()/unmatched;
+        double dist = ratio * pool;
+        if(dist >= p.getMaxManpower()){
+            p.setManpower(p.getMaxManpower());
+        }
+    }
+    
+    // STEP #5
     private static void computeMinimumManpower(PackageSetup p){
         double min = Math.min(p.getMaxManpower(), p.getMSD());
-        p.setManpower( min < p.getManpower() ? min : 0);
+        p.setManpower(min < p.getManpower() ? min : 0);
     }
     
     /**

@@ -16,11 +16,15 @@ import java.util.stream.Collectors;
  * @author a0285126
  */
 public class Utility {
-    public static List<PackageSetup> readFromFile(String file) {
-        List<PackageSetup> list = null;
+    
+    private double manpower;
+    private List<PackageSetup> packageSetups;
+    
+    public void readFromFile(String file) {
         
         try(BufferedReader reader = new BufferedReader(new FileReader(file))){
-            list = reader.lines()
+            this.manpower = Double.parseDouble(reader.readLine());
+            this.packageSetups = reader.lines()
                     .filter(line -> !(line.startsWith("#") || line.trim().equals("")))
                     .map(line -> line.split(","))
                     .map(token -> new PackageSetup(
@@ -34,6 +38,19 @@ public class Utility {
         }catch(IOException e){
             System.out.println(e.getMessage());
         }
-        return list;
+    }
+
+    /**
+     * @return the manpower
+     */
+    public double getManpower() {
+        return manpower;
+    }
+
+    /**
+     * @return the packageSetups
+     */
+    public List<PackageSetup> getPackageSetups() {
+        return packageSetups;
     }
 }
