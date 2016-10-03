@@ -18,12 +18,14 @@ import java.util.stream.Collectors;
 public class Utility {
     
     private double manpower;
+    private String datestr;
     private List<PackageSetup> packageSetups;
     
     public void readFromFile(String file) {
         
         try(BufferedReader reader = new BufferedReader(new FileReader(file))){
             this.manpower = Double.parseDouble(reader.readLine());
+            this.datestr = reader.readLine();
             this.packageSetups = reader.lines()
                     .filter(line -> !(line.startsWith("#") || line.trim().equals("")))
                     .map(line -> line.split(","))
@@ -52,5 +54,13 @@ public class Utility {
      */
     public List<PackageSetup> getPackageSetups() {
         return packageSetups;
+    }
+    
+    /**
+     * Get the date header specified in the input file.
+     * @return 
+     */
+    public String getDateHeader(){
+        return this.datestr;
     }
 }
