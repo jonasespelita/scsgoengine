@@ -137,5 +137,9 @@ public class Engine {
      */
     public double getTotalManpower(){
         return this.manpower;
-    }    
+    }
+
+    public double getExcessManpower(){
+        return this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
+    }
 }
