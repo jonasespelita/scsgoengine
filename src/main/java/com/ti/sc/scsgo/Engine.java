@@ -139,6 +139,10 @@ public class Engine {
         return this.manpower;
     }
 
+    /**
+     * Get the excess manpower from the computed allocation
+     * @return excess manpower
+     */
     public double getExcessManpower(){
         return this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
     }
