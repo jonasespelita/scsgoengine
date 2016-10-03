@@ -6,11 +6,11 @@
 package com.ti.sc.scsgo;
 
 /**
- * Represent a package setup used to feed the engine.
+ * Represent a group setup used to feed the engine.
  * @author a0285126
  */
-public class PackageSetup {
-    // this is the package name
+public class GroupSetup {
+    // this is the group name
     private String name;
     // number of equipment assigned
     private double equipments;
@@ -24,21 +24,21 @@ public class PackageSetup {
     private double demand;
     
     /**
-     * @param name the name of the package
+     * @param name the name of the group
      */
-    public PackageSetup(String name){
+    public GroupSetup(String name){
         this.name = name;
     }
 
     /**
      * 
-     * @param name the name of the package
+     * @param name the name of the group
      * @param demand the expected demand
      * @param equipments the number of equipments (equipment count)
      * @param epp number of equipments per person
      * @param pph parts per hour
      */
-    public PackageSetup(String name, double demand, double equipments, double pph, double epp){
+    public GroupSetup(String name, double demand, double equipments, double pph, double epp){
         this.name = name;
         this.demand = demand;
         this.equipments = equipments;
@@ -47,16 +47,16 @@ public class PackageSetup {
     }
     
     /**
-     * Get the name of the package.
-     * @return the name of the package
+     * Get the name of the group.
+     * @return the name of the group
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Set the name of the package.
-     * @param name the name of the package
+     * Set the name of the group.
+     * @param name the name of the group
      */
     public void setName(String name) {
         this.name = name;
@@ -156,7 +156,7 @@ public class PackageSetup {
     }
     
     /**
-     * Get the maximum manpower allocation possible for this package setup
+     * Get the maximum manpower allocation possible for this group setup
      * @return the maximum manpower to be assigned
      */
     public double getMaxManpower(){

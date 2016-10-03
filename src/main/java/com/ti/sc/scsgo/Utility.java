@@ -19,17 +19,17 @@ public class Utility {
     
     private double manpower;
     private String datestr;
-    private List<PackageSetup> packageSetups;
+    private List<GroupSetup> groupSetups;
     
     public void readFromFile(String file) {
         
         try(BufferedReader reader = new BufferedReader(new FileReader(file))){
             this.manpower = Double.parseDouble(reader.readLine());
             this.datestr = reader.readLine();
-            this.packageSetups = reader.lines()
+            this.groupSetups = reader.lines()
                     .filter(line -> !(line.startsWith("#") || line.trim().equals("")))
                     .map(line -> line.split(","))
-                    .map(token -> new PackageSetup(
+                    .map(token -> new GroupSetup(
                             token[1],                           // demand
                             Double.parseDouble(token[0]),       // name
                             Double.parseDouble(token[2]),       // equipment count
@@ -50,10 +50,10 @@ public class Utility {
     }
 
     /**
-     * @return the packageSetups
+     * @return the groupSetups
      */
-    public List<PackageSetup> getPackageSetups() {
-        return packageSetups;
+    public List<GroupSetup> getGroupSetups() {
+        return groupSetups;
     }
     
     /**
