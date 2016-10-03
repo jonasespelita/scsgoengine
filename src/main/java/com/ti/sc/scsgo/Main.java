@@ -27,13 +27,28 @@ public class Main {
         engine.run();
         LOGGER.log(Level.INFO, "END_TIME={0}", LocalDateTime.now());
         List<GroupSetup> ps = engine.getGroupSetups();
-        ps = ps.stream().sorted((p1, p2) -> Double.compare(p1.getEquipmentUtilization(), p2.getEquipmentUtilization())).collect(Collectors.toList());
+        
+        EngineHelper engineh = new EngineHelper();
+        engineh.setEngine(engine);
+        engineh.setGroupSetups(ps);
+        
+        engineh.addListOutputHandler(new ConsoleOutputHandler());
+//        engineh.addListOutputHandler(new CSVOutputHandler("out.csv"));
+        (new Thread(engineh)).start();
+        
+        /*
+//        ps = ps.stream().sorted((p1, p2) -> Double.compare(p1.getEquipmentUtilization(), p2.getEquipmentUtilization())).collect(Collectors.toList());
         System.out.printf("TOTAL MANPOWER: %.2f\n", engine.getTotalManpower());
         System.out.printf("EXCESS MANPOWER: %.2f\n", engine.getExcessManpower());
+        System.out.printf("AS-OF-DATE: %s\n", util.getDateHeader());
         System.out.println("======================================================================================================================================================");
-        System.out.printf("%20s \t%16s\t%8s\t%8s\t%10s\t%8s\t%8s\t%16s \n", 
+        System.out.printf("%20s \t%12s\t%8s\t%8s\t%8s\t%10s\t%8s\t%8s\t%8s\t%7s\t%7s\t%12s \n", 
                 "NAME",
-                "MAN ("+util.getDateHeader()+") ",
+                "DEMAND",
+                "ECOUNT",
+                "EPP",
+                "PPH",
+                "MAN",
                 "MAX",
                 "SMIN",
                 "E-UTILD",
@@ -41,8 +56,12 @@ public class Main {
                 "DEM_SAT",
                 "TTL_OUT");
         System.out.println("======================================================================================================================================================");
-        ps.stream().forEach(p -> System.out.printf("%20s\t%16.3f\t%8.3f\t%8.3f\t%10.3f\t%8.2f\t%8.2f\t%16.4f \n", 
+        ps.stream().forEach(p -> System.out.printf("%20s\t%12.2f\t%8.2f\t%8.2f\t%8.2f\t%10.3f\t%8.3f\t%8.3f\t%8.3f\t%7.3f\t%7.3f\t%12.2f \n", 
                 p.getName(),
+                p.getDemand(),
+                p.getEquipments(),
+                p.getEPP(),
+                p.getPPH(),
                 p.getManpower(),
                 p.getMaxManpower(),
                 p.getSuggestedMinManpower(),
@@ -50,5 +69,6 @@ public class Main {
                 p.getEquipmentUtilization(),
                 p.getDemandSatisfaction(),
                 p.getTotalOutput()));
+                */
     }
 }

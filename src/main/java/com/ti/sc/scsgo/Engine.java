@@ -39,7 +39,10 @@ public class Engine {
         
         LOGGER.info("Setting initial allocation");
         // initial allocation will be the average from the total manpower
-        double imp = this.manpower / this.groups.size();
+        double size = this.groups.stream().filter(p -> p.getEPP() > 0).count();
+        LOGGER.log(Level.FINE, "Effective size={0}", size);
+        double imp = this.manpower / size;
+        LOGGER.log(Level.FINE, "Initial manpower={0}", imp);
         this.groups.stream().peek( (GroupSetup p) -> p.setManpower(imp)).collect(Collectors.toList());
 
         LOGGER.info("Computing first pass allocation");
@@ -82,21 +85,27 @@ public class Engine {
         // get the ratio and the corresponding distribution based on the unmatched demand
         double unmatched = this.groups.stream().filter(p -> p.getManpower() == 0).mapToDouble(p -> p.getMSD()).sum();
         double matched = this.groups.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
-        this.groups.stream()
-                .parallel()
-                .filter(p -> p.getManpower() == 0)
-                .peek((GroupSetup p) -> p.setManpower((p.getMSD()/unmatched)*(this.manpower-matched)))
-                .collect(Collectors.toList());
-        this.groups.stream().forEach(p -> LOGGER.log(Level.FINEST, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
-        
+        if(unmatched > 0){
+            this.groups.stream()
+                    .parallel()
+                    .filter(p -> p.getManpower() == 0)
+                    .peek((GroupSetup p) -> p.setManpower((p.getMSD()/unmatched)*(this.manpower-matched)))
+                    .collect(Collectors.toList());
+            this.groups.stream().forEach(p -> LOGGER.log(Level.FINEST, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
+        }
         LOGGER.info("END Engine Run");
     }
     
     // STEP #7
     private static void computeProportionalDistribution(GroupSetup p, double unmatched, double pool){
-        double ratio = p.getMSD()/unmatched;
+        double ratio;
+        if(unmatched == 0){
+            ratio = 0;
+        }else{
+            ratio = p.getMSD()/unmatched;
+        }
         double dist = ratio * pool;
-        if(dist >= p.getMaxManpower()){
+        if(dist >= p.getMaxManpower() || dist >= p.getMSD()){
             p.setManpower(Math.min(p.getMaxManpower(), p.getMSD()));
         }
     }

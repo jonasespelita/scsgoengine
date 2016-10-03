@@ -160,7 +160,11 @@ public class GroupSetup {
      * @return the maximum manpower to be assigned
      */
     public double getMaxManpower(){
-        return this.equipments/this.epp;
+        if(this.epp == 0){
+            return 0;
+        }else{
+            return this.equipments/this.epp;
+        }
     }
     
     /**
@@ -168,7 +172,11 @@ public class GroupSetup {
      * @return total number of equipments
      */
     public double getESD(){
-        return this.demand / this.getPPW();
+        if(this.getPPW() == 0){
+            return 0;
+        }else{
+            return this.demand / this.getPPW();
+        }
     }
     
     /**
@@ -176,7 +184,11 @@ public class GroupSetup {
      * @return total number of manpower
      */
     public double getMSD(){
-        return this.getESD()/this.epp;
+        if(this.epp == 0){
+            return 0;
+        }else{
+            return this.getESD()/this.epp;
+        }
     }
     
     /**
@@ -192,7 +204,11 @@ public class GroupSetup {
      * @return equipment utilization factor
      */
     public double getEquipmentUtilization(){
-        return this.getEquipmentUtilized()/this.equipments;
+        if(this.equipments == 0){
+            return 0;
+        }else{
+            return this.getEquipmentUtilized()/this.equipments;
+        }
     }
     
     /**

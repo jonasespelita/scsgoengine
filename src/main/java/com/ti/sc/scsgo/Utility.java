@@ -26,6 +26,7 @@ public class Utility {
         try(BufferedReader reader = new BufferedReader(new FileReader(file))){
             this.manpower = Double.parseDouble(reader.readLine());
             this.datestr = reader.readLine();
+//            this.datestr = file.replaceAll(".csv", "");
             this.groupSetups = reader.lines()
                     .filter(line -> !(line.startsWith("#") || line.trim().equals("")))
                     .map(line -> line.split(","))
