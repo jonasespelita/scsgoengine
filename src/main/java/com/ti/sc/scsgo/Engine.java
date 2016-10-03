@@ -53,20 +53,21 @@ public class Engine {
         double pool = 0;
         int iteration = 1;
         for(iteration=1; iteration<this.pkgs.size()-1; iteration++){
-            LOGGER.log(Level.FINE, "ITERATION={0}=====", iteration);    
-            LOGGER.log(Level.FINE, "--Computing MATCHED/UNMATCHED manpower");
+            LOGGER.log(Level.FINER, "ITERATION={0}=====", iteration);    
+            LOGGER.log(Level.FINER, "--Computing MATCHED/UNMATCHED manpower");
             // let's get the total manpower that has been allocated, and those still unallocated
             double matched = this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
             double unmatched = this.pkgs.stream().filter(p -> p.getManpower() == 0).mapToDouble(p -> p.getMSD()).sum();
             LOGGER.log(Level.FINER, "\t**MATCHED={0}, UNMATCHED={1}, POOL={2}", new Object[]{matched, unmatched, this.manpower-matched});
             
-            LOGGER.log(Level.FINE, "--Computing proportional distribution");
+            LOGGER.log(Level.FINER, "--Computing proportional distribution");
             // get the ratio and the corresponding distribution based on the unmatched demand
             this.pkgs.stream()
+                    .parallel()
                     .filter(p -> p.getManpower() == 0)
                     .peek((PackageSetup p) -> Engine.computeProportionalDistribution(p, unmatched, this.manpower-matched))
                     .collect(Collectors.toList());
-            this.pkgs.stream().forEach(p -> LOGGER.log(Level.FINER, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
+            this.pkgs.stream().forEach(p -> LOGGER.log(Level.FINEST, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
             
             // if the previous pool is the same as the current poool
             // then we can break the iteration since it means we are no longer getting improvements
@@ -76,16 +77,17 @@ public class Engine {
                 pool = this.manpower - matched;
             }
         }
-        LOGGER.log(Level.INFO, "Number of iterations: {0}", iteration);
+        LOGGER.log(Level.FINE, "Number of iterations: {0}", iteration);
         LOGGER.info("Finalizing allocation");
         // get the ratio and the corresponding distribution based on the unmatched demand
         double unmatched = this.pkgs.stream().filter(p -> p.getManpower() == 0).mapToDouble(p -> p.getMSD()).sum();
         double matched = this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
         this.pkgs.stream()
+                .parallel()
                 .filter(p -> p.getManpower() == 0)
                 .peek((PackageSetup p) -> p.setManpower((p.getMSD()/unmatched)*(this.manpower-matched)))
                 .collect(Collectors.toList());
-        this.pkgs.stream().forEach(p -> LOGGER.log(Level.FINER, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
+        this.pkgs.stream().forEach(p -> LOGGER.log(Level.FINEST, "\t{0}: {1}", new Object[]{p.getName(), p.getManpower()} ));
         
         LOGGER.info("END Engine Run");
     }
