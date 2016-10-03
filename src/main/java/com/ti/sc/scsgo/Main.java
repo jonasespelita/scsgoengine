@@ -7,20 +7,24 @@ package com.ti.sc.scsgo;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author a0285126
  */
 public class Main {
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    
     public static void main(String[] args) {
         Utility util = new Utility();
         util.readFromFile(args[0]);
         
         Engine engine = new Engine(util.getPackageSetups(), util.getManpower());
         
-        System.out.println(LocalDateTime.now());
+        LOGGER.log(Level.INFO, "START_TIME={0}", LocalDateTime.now());
         engine.run();
-        System.out.println(LocalDateTime.now());
+        LOGGER.log(Level.INFO, "END_TIME={0}", LocalDateTime.now());
         List<PackageSetup> ps = engine.getPackageSetups();
         System.out.println("==========================================================================================");
         System.out.printf("%8s \t%8s\t%6s\t%10s\t%6s\t%6s\t%16s \n", 
