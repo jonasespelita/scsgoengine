@@ -144,6 +144,6 @@ public class Engine {
      * @return excess manpower
      */
     public double getExcessManpower(){
-        return this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
+        return this.manpower - this.pkgs.stream().filter(p -> p.getManpower() > 0).mapToDouble(p -> p.getManpower()).sum();
     }
 }
