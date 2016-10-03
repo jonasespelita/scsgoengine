@@ -26,18 +26,19 @@ public class Main {
         engine.run();
         LOGGER.log(Level.INFO, "END_TIME={0}", LocalDateTime.now());
         List<PackageSetup> ps = engine.getPackageSetups();
+        System.out.printf("TOTAL MANPOWER: %.2f\n", engine.getTotalManpower());
         System.out.println("================================================================================================================");
-        System.out.printf("%12s \t%8s\t%8s\t%8s\t%10s\t%6s\t%6s\t%16s \n", 
+        System.out.printf("%20s \t%8s\t%8s\t%8s\t%10s\t%6s\t%6s\t%16s \n", 
                 "NAME",
                 "MAN",
                 "MAX",
                 "SMIN",
                 "E-UTILD",
                 "E-UTILN",
-                "DEM SAT",
-                "TTL OUT");
+                "DEM_SAT",
+                "TTL_OUT");
         System.out.println("================================================================================================================");
-        ps.stream().forEach(p -> System.out.printf("%12s:\t%8.3f\t%8.3f\t%8.3f\t%10.3f\t%6.2f\t%6.2f\t%16.4f \n", 
+        ps.stream().forEach(p -> System.out.printf("%20s:\t%8.3f\t%8.3f\t%8.3f\t%10.3f\t%6.2f\t%6.2f\t%16.4f \n", 
                 p.getName(),
                 p.getManpower(),
                 p.getMaxManpower(),
