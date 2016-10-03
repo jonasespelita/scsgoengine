@@ -26,20 +26,22 @@ public class Main {
         engine.run();
         LOGGER.log(Level.INFO, "END_TIME={0}", LocalDateTime.now());
         List<PackageSetup> ps = engine.getPackageSetups();
-        System.out.println("==========================================================================================");
-        System.out.printf("%8s \t%8s\t%6s\t%10s\t%6s\t%6s\t%16s \n", 
+        System.out.println("================================================================================================================");
+        System.out.printf("%12s \t%8s\t%8s\t%8s\t%10s\t%6s\t%6s\t%16s \n", 
                 "NAME",
                 "MAN",
                 "MAX",
+                "SMIN",
                 "E-UTILD",
                 "E-UTILN",
                 "DEM SAT",
                 "TTL OUT");
-        System.out.println("==========================================================================================");
-        ps.stream().forEach(p -> System.out.printf("%8s:\t%8.3f\t%8.3f\t%10.3f\t%6.2f\t%6.2f\t%16.4f \n", 
+        System.out.println("================================================================================================================");
+        ps.stream().forEach(p -> System.out.printf("%12s:\t%8.3f\t%8.3f\t%8.3f\t%10.3f\t%6.2f\t%6.2f\t%16.4f \n", 
                 p.getName(),
                 p.getManpower(),
                 p.getMaxManpower(),
+                p.getSuggestedMinManpower(),
                 p.getEquipmentUtilized(),
                 p.getEquipmentUtilization(),
                 p.getDemandSatisfaction(),

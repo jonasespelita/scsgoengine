@@ -211,6 +211,14 @@ public class PackageSetup {
         return this.getTotalOutput()/this.demand;
     }
     
+    /**
+     * Get the suggested minimum manpower to satisfy demand.
+     * @return suggested minimum manpower
+     */
+    public double getSuggestedMinManpower(){
+        return Math.min(this.getMaxManpower(), this.getMSD());
+    }
+    
     @Override
     public String toString(){
         return this.name;
