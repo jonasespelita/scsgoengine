@@ -28,11 +28,11 @@ public class Utility {
                     .filter(line -> !(line.startsWith("#") || line.trim().equals("")))
                     .map(line -> line.split(","))
                     .map(token -> new PackageSetup(
-                            token[1], 
-                            Double.parseDouble(token[0]), 
-                            Double.parseDouble(token[2]), 
-                            Double.parseDouble(token[3]), 
-                            Double.parseDouble(token[4]))
+                            token[1],                           // demand
+                            Double.parseDouble(token[0]),       // name
+                            Double.parseDouble(token[2]),       // equipment count
+                            Double.parseDouble(token[3]),       // pph
+                            Double.parseDouble(token[4]))       // epp
                     )
                     .collect(Collectors.toList());
         }catch(IOException e){
