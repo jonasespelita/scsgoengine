@@ -208,12 +208,11 @@ public class PackageSetup {
      * @return demand satisfaction factor
      */
     public double getDemandSatisfaction(){
-        double demsat = 0;
-        try{
-            demsat = this.getTotalOutput()/this.demand;
-        }catch(ArithmeticException e){}
-        
-        return demsat;
+        if(this.demand == 0){
+            return 0;
+        }else{
+            return this.getTotalOutput()/this.demand;
+        }
     }
     
     /**
