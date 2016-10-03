@@ -5,6 +5,7 @@
  */
 package com.ti.sc.scsgo;
 
+import java.time.LocalDateTime;
 import java.util.List;
 /**
  *
@@ -16,7 +17,10 @@ public class Main {
         util.readFromFile(args[0]);
         
         Engine engine = new Engine(util.getPackageSetups(), util.getManpower());
+        
+        System.out.println(LocalDateTime.now());
         engine.run();
+        System.out.println(LocalDateTime.now());
         List<PackageSetup> ps = engine.getPackageSetups();
         System.out.println("==========================================================================================");
         System.out.printf("%8s \t%8s\t%6s\t%10s\t%6s\t%6s\t%16s \n", 
